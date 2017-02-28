@@ -1,0 +1,11 @@
+language: node_js
+node_js:
+- 6
+deploy:
+  provider: npm
+  email: info@abilisense.com
+  api_key:
+    secure: XIlrHmgTKbC6WSitheQAsMqskKEtpcWB7MjZ09or95Zywj57vmSAVb4Hmfnr/8RhtuXbOXB5nzj7MkIT7nVkTE2XI85Wfyd3lBOhIAVWV7ugrrNNZaiRgyoLlx4JbbPkYfuMH8j/fY6ICjReC/gNs+iqKwHkDIbbdQUuhbnM+pDb15hV1ykTZqfuut9fQGAEoDBS8pG3ZZtaqJiYrTYCmrcNDw/PrLkMVkxOEneWrOh/mxpPIfB1b5uoNXr9brhMMIM2k8S/x3WFDXSB22Z6471jO03dy25mOzGXdC7/m6PaItV2/K2k+nIc52ut4U6vYxVXTumZxYAo/RnrY2vRL94v0H0LPhB2I3c4s76NBwNAhWldyfSb0L+O3MTKW1VetKzAu5++1/MXKSy/I3Q0jii5bSFjT1qayIi3EPn2gQguAsLIUuCGa0Qt580WVvGUbOItb8cIe6fO2piPQqfJNaexfMkXsv3xhPMHJAFjsT1kvZ4NeukieWpLHVOMWFz2GWGYrNkvb+VN+MC8nq5EMUSh2wAOGJ2AW8Xb6jZXKSZy5g2r94ezOTiRlv++P8BOxidUqThhL/CQ+UAGaQiw/Lk1t28vvugquQsiBqfdB+iScmey7YMeva5wyYMoedXrOkoDog9a4qL8GZLIRIRjR9v97AuEktimV+RqiGJILR8=
+  on:
+    tags: true
+    repo: AbiliSense/parse-server-azure-iothub-cloud-module
