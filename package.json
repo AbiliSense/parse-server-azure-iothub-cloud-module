@@ -1,6 +1,6 @@
 {
   "name": "parse-server-azure-iothub-cloud-module",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "parse-server azure-iothub module for cloud code",
   "main": "index.js",
   "scripts": {
