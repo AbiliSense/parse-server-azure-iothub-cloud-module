@@ -28,7 +28,7 @@ curl -X POST -H "X-Parse-Application-Id: MY_APP_ID" -H "Content-Type: applicatio
 }' "http://localhost:1337/parse/installations/"
 ```
 
-## Send IoT Messeage
+## Send IoT Message
 ```
 curl -X POST -H "X-Parse-Application-Id: MY_APP_ID" -H "Content-Type: application/json" -d '{
 	"deviceId": "d1f65450-726d-4656-ae80-e46c767a0278",
