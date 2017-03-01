@@ -1,6 +1,7 @@
 const crypto = require('crypto');
 var iothub = require('azure-iothub');
 var Message = require('azure-iot-common').Message;
+var _cryptoUtils = require('parse-server/lib/cryptoUtils');
 
 
 var iotHubHostName = process.env.IOTHUB_HOST_NAME || 'iothub.azure-devices.net';
@@ -52,6 +53,33 @@ function getIoTHubDeviceKey(deviceId) {
     return iotHubRequestPromise;
 }
 
+var sendMessageToDevice = (options) => {
+    serviceClient.open(function (err) {
+        if (err) {
+            console.error('Could not connect: ' + err.message);
+        } else {
+            console.log('Service client connected');
+            serviceClient.getFeedbackReceiver(receiveFeedback);
+            var messageId = _cryptoUtils.newObjectId();
+            var message = new Message(JSON.stringify({
+                objectId: messageId,
+                message: options.message
+            }));
+            message.ack = 'full';
+            message.messageId = messageId;
+            console.log('Sending message: ' + message.getData());
+            serviceClient.send(options.deviceId, message, (err, res) => {
+                if (err) {
+                    options.error(err);
+                }
+                if (res) {
+                    options.success(res);
+                }
+            });
+        }
+    });
+};
+
 Parse.Cloud.beforeSave(Parse.Installation, (request, response) => {
     if (request.object.get("deviceType") == "embedded") {
         getIoTHubDeviceKey(request.object.get("installationId"))
@@ -67,12 +95,11 @@ Parse.Cloud.beforeSave(Parse.Installation, (request, response) => {
 });
 
 module.exports.getSasToken = (request, response) => {
-    Parse.Cloud.useMasterKey();
     var deviceId = request.installationId;
     var timeValid = 1440; //24 hr
     var installationQuery = new Parse.Query(Parse.Installation);
     installationQuery.equalTo('installationId', deviceId);
-    installationQuery.find()
+    installationQuery.find({ useMasterKey: true })
         .then((results) => {
             var deviceKeyPromise = new Parse.Promise();
             var deviceKey = results[0].get("key");
@@ -110,21 +137,21 @@ function receiveFeedback(err, receiver){
 
 module.exports.sendIoTMessage = (request, response) => {
     var deviceId = request.params.deviceId;
-    var message = request.params.message;
-    serviceClient.open(function (err) {
-        if (err) {
-            console.error('Could not connect: ' + err.message);
-        } else {
-            console.log('Service client connected');
-            serviceClient.getFeedbackReceiver(receiveFeedback);;
-            var message = new Message(message);
-            message.ack = 'full';
-            message.messageId = "Message ID" + Math.floor(1 + (Math.random() * 150));
-            console.log('Sending message: ' + message.getData());
-            serviceClient.send(targetDevice, message, (err, res) => {
-                if (err) console.log('Send error: ' + err.toString());
-                if (res) console.log('Send status: ' + res.constructor.name);
-            });
+    var options = {
+        deviceId: request.params.deviceId,
+        message: request.params.message || 'unset',
+        source: "Cloud: Homefront Command",
+        success: (res) => {
+            console.log('Send status: ' + res.constructor.name);
+            response.success(res);
+        },
+        error: (err) => {
+            console.log('Send error: ' + err.toString());
+            response.error(err);
         }
-    });
+    };
+
+    sendMessageToDevice(options);
 }
+
+module.exports.sendMessageToDevice = sendMessageToDevice;
